@@ -20,10 +20,13 @@ spec:
     - port: {{ .Values.server.frontend.service.port }}
       targetPort: rpc
       protocol: TCP
-      name: grpc-rpc
+      name: tcp-rpc
       {{- if hasKey .Values.server.frontend.service "nodePort" }}
       nodePort: {{ .Values.server.frontend.service.nodePort }}
       {{- end }}
+    - port: 6934
+      protocol: TCP
+      name: tcp-membership # <- name needs to start with tcp
   selector:
     app.kubernetes.io/name: {{ include "temporal.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -64,11 +67,14 @@ spec:
     - port: {{ $serviceValues.service.port }}
       targetPort: rpc
       protocol: TCP
-      name: grpc-rpc
+      name: tcp-rpc # <- name needs to start with tcp
     - port: 9090
       targetPort: metrics
       protocol: TCP
       name: metrics
+    - port: 6934
+      protocol: TCP
+      name: tcp-membership # <- name needs to start with tcp
   selector:
     app.kubernetes.io/name: {{ include "temporal.name" $ }}
     app.kubernetes.io/instance: {{ $.Release.Name }}
